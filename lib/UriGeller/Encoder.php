@@ -20,7 +20,6 @@ class UriGeller_Encoder
         $serialized = $this->serialize($data);
         $compressed = $this->compress($serialized);
         $crypted    = $this->crypt($compressed);
-        
         return $crypted;
     }
     
@@ -31,11 +30,21 @@ class UriGeller_Encoder
     
     private function compress($data)
     {
-        $deflated    = gzdeflate($data);
-        $sixtyFourd  = base64_encode($deflated);
-        $urlEncoded  = urlencode($sixtyFourd);
+        $compressed   = gzcompress($data, 1);
+        $soup         = base64_encode($compressed);
+        $escaped      = $this->escape($soup);
+        return $escaped;
+    }
+    
+    private function escape($soup)
+    {
         
-        return $urlEncoded;
+        return strtr($soup, '+/=', '-_,');
+        
+        $in  = array('+', '/', '=');
+        $out = array('-', '_', '|');
+        
+        return str_replace($in, $out, $soup);
     }
     
     private function crypt($data)

@@ -28,7 +28,7 @@ class UriGeller_SaltShaker
     
     private function digest($data)
     {
-        return hash('sha256', $data);
+        return hash('sha1', $data);
     }
     
     private function getHashLength()

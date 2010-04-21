@@ -33,11 +33,15 @@ class UriGeller_Decoder
     
     private function extract($soup)
     {
-        $sixtyFourd = urldecode($soup);
-        $deflated   = base64_decode($sixtyFourd);
-        $data       = gzinflate($deflated);
-        
+        $unescaped   = $this->unescape($soup);
+        $compressed  = base64_decode($unescaped);
+        $data        = gzuncompress($compressed);
         return $data;
+    }
+    
+    private function unescape($soup)
+    {
+        return strtr($soup, '-_,', '+/=');
     }
     
     private function decrypt($soup)
@@ -45,7 +49,6 @@ class UriGeller_Decoder
         if ($this->saltShaker == null)  {
             $this->saltShaker = new UriGeller_SaltShaker(array('salt' => $this->secret));
         }
-        
         return $this->saltShaker->remove_salt($soup);
     }
 }
